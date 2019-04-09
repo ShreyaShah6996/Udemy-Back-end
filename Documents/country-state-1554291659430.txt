@@ -1,0 +1,59 @@
+create table country(countryId int primary key AUTO_INCREMENT ,countryName varchar(255))
+
+create table state(stateId int  primary key AUTO_INCREMENT ,stateName varchar(255),countryId int);
+
+ALTER TABLE state ADD FOREIGN KEY (countryId) REFERENCES country(countryId);
+
+ 
+insert into country (countryName) values('India');
+insert into country (countryName) values('China');
+insert into country (countryName) values('Italy');
+insert into country (countryName) values('Nepal');
+insert into country (countryName) values('Australia');
+insert into country (countryName) values('Belgium');
+insert into country (countryName) values('Brazil');
+insert into country (countryName) values('Egypt');
+insert into country (countryName) values('France');
+insert into country (countryName) values('Germany');
+
+insert into state(stateName,countryId) values('Gujarat',1);
+insert into state(stateName,countryId) values('Rajasthan',1);
+insert into state(stateName,countryId) values('Delhi',1);
+insert into state(stateName,countryId) values('Maharashtra',1);
+insert into state(stateName,countryId) values('Kerela',1);
+
+insert into state(stateName,countryId) values('Fujian',2);
+insert into state(stateName,countryId) values('Hainan',2);
+insert into state(stateName,countryId) values('Henan',2);
+insert into state(stateName,countryId) values('Hubei',2);
+insert into state(stateName,countryId) values('Shandong',2);
+
+
+insert into state(stateName,countryId) values('Trentino',3);
+insert into state(stateName,countryId) values('South Tyrol',3);
+
+insert into state(stateName,countryId) values('Gandaki',4);
+insert into state(stateName,countryId) values('Karnali',4);
+
+insert into state(stateName,countryId) values('Queensland',5);
+insert into state(stateName,countryId) values('Victoria',5);
+insert into state(stateName,countryId) values('Tasmania',5);
+insert into state(stateName,countryId) values('New South Wales',5);
+
+insert into state(stateName,countryId) values('Brussels',6);
+insert into state(stateName,countryId) values('Grent',6);
+insert into state(stateName,countryId) values('Bruges',6);
+
+insert into state(stateName,countryId) values('Bahia',7);
+insert into state(stateName,countryId) values('Parana',7);
+insert into state(stateName,countryId) values('Minas Gerais',7);
+
+insert into state(stateName,countryId) values('Aswan',8);
+insert into state(stateName,countryId) values('Cairo',8);
+
+insert into state(stateName,countryId) values('Brittany',9);
+insert into state(stateName,countryId) values('Nouvelle-Aquitaine',9);
+
+
+insert into state(stateName,countryId) values('Hamburg',10);
+insert into state(stateName,countryId) values('Bavaria',10);

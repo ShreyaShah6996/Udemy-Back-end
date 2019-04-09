@@ -1,0 +1,162 @@
+import React, { Component } from 'react';
+import { Button, Container, Media, Alert } from 'reactstrap';
+import { connect } from 'react-redux';
+import { bindActionCreators } from "redux";
+import { Rate } from 'antd';
+import 'antd/dist/antd.css';
+
+import * as courseAction from '../../../action/CourseAction';
+import * as cartAction from '../../../action/cartAction';
+import path from '../../../path';
+
+class CourseList extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            imageModal: false,
+            videoModal: false,
+            courseId: 0,
+            visible: false
+        };
+        this.toggleImage = this.toggleImage.bind(this);
+        this.toggleVideo = this.toggleVideo.bind(this);
+        this.onDismiss = this.onDismiss.bind(this);
+    }
+
+    componentDidMount() {
+        if (this.props.token && this.props.userId) {
+            this.props.action.cart.getCartByUser(parseInt(this.props.userId))
+        }
+        this.props.action.course.getCourse();
+    }
+
+    toggleImage(courseId, e) {
+        this.setState(prevState => ({
+            imageModal: !prevState.imageModal,
+            courseId: courseId
+        }));
+    }
+
+    onDismiss() {
+        this.setState({ visible: !this.state.visible });
+    }
+
+    toggleVideo(courseId, e) {
+        this.setState(prevState => ({
+            videoModal: !prevState.videoModal,
+            courseId: courseId
+        }));
+    }
+
+    btnNewCourse(e) {
+        e.preventDefault();
+        this.props.history.push('/addCourse');
+    }
+
+    btnAddToCart(courseId, e) {
+        let data = {
+            userId: parseInt(this.props.userId),
+            courseId: courseId
+        }
+        if (this.props.token) {
+            this.props.action.cart.addToCart(data);
+        }
+        else {
+            // if (localStorage.getItem("cart")) {
+            // let local = new Array();
+            // local.push(JSON.parse(localStorage.getItem("cart")));
+            // // console.log(local[0].courseId)
+            // local[0].courseId.push(courseId)
+            // localStorage.setItem("cart", JSON.stringify({ local }));
+            //====================================================================
+            // var cart = JSON.parse(localStorage.getItem('cart')) || {};
+            // cart["courseId"] = cart.add(courseId);        
+            // localStorage.setItem('cart', JSON.stringify(cart));
+            //====================================================================
+            // }
+            // else
+            localStorage.setItem("cart", JSON.stringify({ courseId: courseId }));
+        }
+        this.onDismiss();
+    }
+
+    btnExplore(courseId, e) {
+        this.props.history.push({
+            pathname: '/exploreCourse/' + courseId
+        })
+    }
+
+    btnGoCart(e) {
+        this.props.history.push('/cart');
+    }
+
+    renderMedia(course) {
+        let addedToCart = true;
+        if (this.props.getCart && this.props.getCart.length !== 0) {
+            this.props.getCart.map(cart => {
+                if (cart.courseId === course.id) {
+                    return addedToCart = false;
+                }
+                return null
+            })
+        }
+        return (
+            <div key={course.id} style={{ padding: "4px" }}>
+                <Media className="block-example border border-grey"  >
+                    <Media left>
+                        <Media object src={path + "images/defaultCourseImage.png"} alt="Course" />
+                    </Media>
+                    <Media body style={{ textAlign: "left", marginLeft: "40px", marginTop: "20px" }}>
+                        <Media heading>{course.coursename}</Media>
+                        <Rate allowHalf defaultValue={course.ratings} disabled />
+                    </Media>
+                    <Media right>
+                        <Button style={{ marginTop: "30px", marginRight: "15px" }} outline onClick={this.btnExplore.bind(this, course.id)}>Explore</Button>
+                        {addedToCart ?
+                            <Button style={{ float: "right", marginTop: "30px", marginRight: "15px" }} outline onClick={this.btnAddToCart.bind(this, course.id)} >Add To Cart</Button>
+                            : <Button style={{ float: "right", marginTop: "30px", marginRight: "15px" }} outline onClick={this.btnGoCart.bind(this)}>Go to Cart</Button>}
+                    </Media>
+                </Media>
+            </div >
+        )
+    }
+
+    render() {
+        let courseList = [];
+        if (this.props.course) {
+            this.props.course.map(course => {
+                return courseList.push(this.renderMedia(course))
+            })
+        }
+        return (
+            <div>
+                <h3 style={{ marginTop: "20px" }}>Courses</h3>
+                <Container style={{ marginTop: "40px" }}>
+                    <Alert color="info" isOpen={this.state.visible} toggle={this.onDismiss}>
+                        Course Successfully Added to Cart!!
+                    </Alert>
+                    {courseList}
+                </Container>
+            </div>
+        )
+    }
+}
+
+const mapStateToProps = state => {
+    return {
+        token: state.auth.token,
+        course: state.course.course,
+        Role: state.auth.Role,
+        userId: state.auth.userId,
+        getCart: state.cart.getCart
+    }
+}
+
+const mapDispatchToProps = (dispatch) => ({
+    action: {
+        course: bindActionCreators(courseAction, dispatch),
+        cart: bindActionCreators(cartAction, dispatch),
+    }
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(CourseList);
